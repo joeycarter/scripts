@@ -1,0 +1,19 @@
+#!/bin/zsh
+
+# Init Kerberos 
+# =============
+# 
+# Initialize a Kerberos ticket and list the currently active tickets.
+# 
+# Usage
+# 
+#   $ kinit
+
+# Get username from scripts repository
+USER="$( cd "$( dirname "${(%):-%N}" )" && cat $(pwd)/.username )"
+
+kinit -f ${USER}@CERN.CH
+
+echo
+
+klist

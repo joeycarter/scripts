@@ -1,0 +1,37 @@
+#!/bin/bash
+
+COMP=$(uname -a)
+
+DIR_LIST=(eximap.utoronto.ca/ imap.cern.ch/ maildir.physics.utoronto.ca/)
+
+
+if [[ $COMP == *"joey-desktop"* ]]; then
+	TH_PROF_LOCAL="/home/joeycarter/.thunderbird/e0ydci40.default/ImapMail/"
+	TH_PROF_REMOTE="/Users/joeycarter/Library/Thunderbird/Profiles/az1gm1jf.default/ImapMail/"
+
+	for DIR in ${DIR_LIST[@]}; do
+		echo "Syncing ${DIR}msgFilterRules.dat with joey-macbook"
+		rsync -azP ${TH_PROF_LOCAL}${DIR}msgFilterRules.dat joeycarter@joey-macbook.local:${TH_PROF_REMOTE}${DIR}msgFilterRules.dat
+		echo
+	done
+
+elif [[ $COMP == *"joey-macbook"* ]]; then
+	TH_PROF_LOCAL="/Users/joeycarter/Library/Thunderbird/Profiles/az1gm1jf.default/ImapMail/"
+	TH_PROF_REMOTE="/home/joeycarter/.thunderbird/e0ydci40.default/ImapMail/"
+
+	for DIR in ${DIR_LIST[@]}; do
+		echo "Synching ${DIR}msgFilterRules.dat with joey-desktop"
+		rsync -azP ${TH_PROF_LOCAL}${DIR}msgFilterRules.dat joeycarter@joey-desktop.local:${TH_PROF_REMOTE}${DIR}msgFilterRules.dat
+		echo
+	done
+
+elif [[ $COMP == *"physics.utoronto.ca"* ]]; then
+	TH_PROF_LOCAL="/Users/joeycarter/Library/Thunderbird/Profiles/az1gm1jf.default/ImapMail/"
+	TH_PROF_REMOTE="/home/joeycarter/.thunderbird/e0ydci40.default/ImapMail/"
+
+	for DIR in ${DIR_LIST[@]}; do
+		echo "Syncing ${DIR}msgFilterRules.dat with joey-desktop"
+		rsync -azP ${TH_PROF_LOCAL}${DIR}msgFilterRules.dat joeycarter@joey-desktop.ddns.net:${TH_PROF_REMOTE}${DIR}msgFilterRules.dat
+		echo
+	done
+fi

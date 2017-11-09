@@ -1,0 +1,17 @@
+#!/bin/zsh
+
+# Check for Running Screen Session
+# ================================
+# 
+# Check if a screen session is running on any lxplus node from 001 to 200
+
+
+# Get username from scripts repository
+USER="$( cd "$( dirname "${(%):-%N}" )" && cat $(pwd)/.username )"
+
+for i in $(seq -f "%03g" 1 200); do
+	echo "${USER}@lxplus$i.cern.ch"
+	ssh -o ConnectTimeout=10 -o PreferredAuthentications=gssapi-with-mic,gssapi \
+	-o GSSAPIAuthentication=yes -o StrictHostKeyChecking=no -o LogLevel=quiet \
+	${USER}@lxplus$i.cern.ch "(screen -list | head -1 | grep -q 'There is a screen on') && hostname && screen -list"
+done
