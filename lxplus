@@ -4,7 +4,7 @@
 argc=$#
 
 # Check input arguments
-if [[ $argc -ne 0 ]] && [[ $argc -ne 1 ]]; then
+if (($argc != 0 )) && (($argc != 1)); then
     echo "usage: lxplus <node>"
     exit 1
 fi
@@ -17,21 +17,21 @@ echo "Checking Kerberos tickets..."
 eval klist
 k_code=$?  # Return code; 0 if all good, 1 if no ticket
 
-if [[ $k_code -eq 1 ]]; then
+if (($k_code == 1)); then
     echo "Enter Kerberos credentials:"
     eval init-krb
 fi
 
 
 # No node given; let lxplus decide
-if [[ $argc -eq 0 ]]; then
+if (($argc == 0)); then
 	echo
     echo ">>> ssh ${USER}@lxplus.cern.ch"
     ssh ${USER}@lxplus.cern.ch
 fi
 
 # Login to the specific node
-if [[ $argc -eq 1 ]]; then
+if (($argc == 1)); then
     node=$1
     echo
     echo ">>> ssh ${USER}@lxplus${node}.cern.ch"
