@@ -1,5 +1,17 @@
 #!/bin/zsh
 
+# Login to lxplus
+# ===============
+# 
+# Login to CERN's lxplus server. You can login to either the first available
+# node or to a specific node (which is useful if you have a screen session
+# running on that node, as screen sessions cannot be accessed from other nodes).
+# 
+# Usage
+# -----
+# 
+# $ lxplus <node>
+
 # Number of given arguments
 argc=$#
 
