@@ -4,15 +4,35 @@
 # =============
 # 
 # Initialize a Kerberos ticket and list the currently active tickets.
+# You can also specify the lifetime of the ticket (default is 12h)
 # 
 # Usage
 # 
-#   $ kinit
+#   $ init-krb <time>
+
+# Number of given arguments
+argc=$#
 
 # Get username from scripts repository
 USER="$( cd "$( dirname "${(%):-%N}" )" && cat $(pwd)/.username )"
 
-kinit -f ${USER}@CERN.CH
+USAGE="usage: init-krb [--help] <time>"
+
+# Print help message
+if ((argc == 1)) && [[ $1 == "--help" ]]; then
+    echo $USAGE
+    exit 0
+fi
+
+# Init kerberos ticket with default or specified lifetime
+if ((argc == 0)); then
+    kinit -l 12h -f ${USER}@CERN.CH
+elif ((argc == 1)); then
+    kinit -l $1 -f ${USER}@CERN.CH
+else
+    echo $USAGE
+    exit 1
+fi
 
 echo
 
