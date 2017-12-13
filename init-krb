@@ -1,13 +1,13 @@
 #!/bin/zsh
 
-# Init Kerberos 
+# Init Kerberos
 # =============
-# 
+#
 # Initialize a Kerberos ticket and list the currently active tickets.
 # You can also specify the lifetime of the ticket (default is 12h)
-# 
+#
 # Usage
-# 
+#
 #   $ init-krb <time>
 
 # Number of given arguments
@@ -19,9 +19,16 @@ USER="$( cd "$( dirname "${(%):-%N}" )" && cat $(pwd)/.username )"
 USAGE="usage: init-krb [--help] <time>"
 
 # Print help message
-if ((argc == 1)) && [[ $1 == "--help" ]]; then
+if [[ $1 == "--help" ]] && ((argc == 1)); then
     echo $USAGE
     exit 0
+fi
+
+# Print help message
+if [[ $1 == "--help" ]] && ((argc > 1)); then
+    echo "init-krb: unrecognized option '${@:2}'"
+    echo $USAGE
+    exit 1
 fi
 
 # Init kerberos ticket with default or specified lifetime

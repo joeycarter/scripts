@@ -2,27 +2,37 @@
 
 # Login to lxplus
 # ===============
-# 
+#
 # Login to CERN's lxplus server. You can login to either the first available
 # node or to a specific node (which is useful if you have a screen session
 # running on that node, as screen sessions cannot be accessed from other nodes).
-# 
+#
 # Usage
 # -----
-# 
-# $ lxplus <node>
+#
+# $ lxplus [--help] <node>
 
 # Number of given arguments
 argc=$#
 
-# Check input arguments
-if (($argc != 0 )) && (($argc != 1)); then
-    echo "usage: lxplus <node>"
+# Get username from scripts repository
+USER="$( cd "$( dirname "${(%):-%N}" )" && cat $(pwd)/.username )"
+
+USAGE="usage: lxplus [--help] <node>"
+
+# Print help message
+if [[ $1 == "--help" ]] && ((argc == 1)); then
+    echo $USAGE
+    exit 0
+fi
+
+# Print help message
+if [[ $1 == "--help" ]] && ((argc > 1)); then
+    echo "lxplus: unrecognized option '${@:2}'"
+    echo $USAGE
     exit 1
 fi
 
-# Get username from scripts repository
-USER="$( cd "$( dirname "${(%):-%N}" )" && cat $(pwd)/.username )"
 
 # Check if Kerberos ticket exists
 echo "Checking Kerberos tickets..."
