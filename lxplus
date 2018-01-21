@@ -6,32 +6,62 @@
 # Login to CERN's lxplus server. You can login to either the first available
 # node or to a specific node (which is useful if you have a screen session
 # running on that node, as screen sessions cannot be accessed from other nodes).
-#
-# Usage
-# -----
-#
-# $ lxplus [--help] <node>
 
-# Number of given arguments
+
+# Script name
+sname=${0##*/}
+
+# Help message
+show_help() {
+cat <<EOF
+usage: ${sname} [--help] [-X] [NODE]
+
+Login to CERN's lxplus server. You can login to either the first available
+node or to a specific node (which is useful if you have a screen session
+running on that node, as screen sessions cannot be accessed from other nodes).
+
+optional arguments:
+  -X           Enable X11 forwarding (i.e. use ssh -X)
+  NODE         Login to this lxplus node (e.g. 001, 002, etc.)
+  -h, --help   Show this help message and exit
+EOF
+}
+
+
+# ----- Parse input arguments -----#
+
+POSITIONAL=()  # Array to store positional arguments
+
+USE_X11=false
+
+while (( $# > 0 )); do
+    opt="$1"
+
+    case $opt in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -X)
+            USE_X11=true
+            shift
+            ;;
+        *)
+            POSITIONAL+=("$1")
+            shift
+            ;;
+    esac
+done
+
+set -- "${POSITIONAL[@]}"  # Restore positional parameters
+
+# Parse arguments and get arg count
+node=$1
 argc=$#
+
 
 # Get username from scripts repository
 USER="$( cd "$( dirname "${(%):-%N}" )" && cat $(pwd)/.username )"
-
-USAGE="usage: lxplus [--help] <node>"
-
-# Print help message
-if [[ $1 == "--help" ]] && ((argc == 1)); then
-    echo $USAGE
-    exit 0
-fi
-
-# Print help message
-if [[ $1 == "--help" ]] && ((argc > 1)); then
-    echo "lxplus: unrecognized option '${@:2}'"
-    echo $USAGE
-    exit 1
-fi
 
 
 # Check if Kerberos ticket exists
@@ -39,23 +69,26 @@ echo "Checking Kerberos tickets..."
 eval klist
 k_code=$?  # Return code; 0 if all good, 1 if no ticket
 
-if (($k_code == 1)); then
+if (( $k_code == 1 )); then
     echo "Enter Kerberos credentials:"
     eval init-krb
 fi
 
 
-# No node given; let lxplus decide
-if (($argc == 0)); then
-	echo
-    echo ">>> ssh ${USER}@lxplus.cern.ch"
-    ssh ${USER}@lxplus.cern.ch
+# Get login path
+if [[ -z $node ]]; then
+    # No node given, let lxplus decide
+    login_path="${USER}@lxplus.cern.ch"
+else
+    # Login to the specific node
+    login_path="${USER}@lxplus${node}.cern.ch"
 fi
 
-# Login to the specific node
-if (($argc == 1)); then
-    node=$1
-    echo
-    echo ">>> ssh ${USER}@lxplus${node}.cern.ch"
-    ssh ${USER}@lxplus${node}.cern.ch
+# Login (with or without X11 forwarding)
+if [[ $USE_X11 = true ]]; then
+    echo ">>> ssh -X ${login_path}"
+    ssh -X ${login_path}
+else
+    echo ">>> ssh ${login_path}"
+    ssh ${login_path}
 fi
