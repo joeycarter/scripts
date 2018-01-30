@@ -66,12 +66,12 @@ USER="$( cd "$( dirname "${(%):-%N}" )" && cat $(pwd)/.username )"
 
 # Check if Kerberos ticket exists
 echo "Checking Kerberos tickets..."
-eval klist
+klist
 k_code=$?  # Return code; 0 if all good, 1 if no ticket
 
 if (( $k_code == 1 )); then
     echo "Enter Kerberos credentials:"
-    eval init-krb
+    init-krb
 fi
 
 
