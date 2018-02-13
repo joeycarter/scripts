@@ -14,14 +14,14 @@ sname=${0##*/}
 # Help message
 show_help() {
 cat <<EOF
-usage: ${sname} [--help] [-X] [NODE]
+usage: ${sname} [--help] [--no-x] [NODE]
 
 Login to CERN's lxplus server. You can login to either the first available
 node or to a specific node (which is useful if you have a screen session
 running on that node, as screen sessions cannot be accessed from other nodes).
 
 optional arguments:
-  -X           Enable X11 forwarding (i.e. use ssh -X)
+  --no-x       Disable X11 forwarding (enabled by default)
   NODE         Login to this lxplus node (e.g. 001, 002, etc.)
   -h, --help   Show this help message and exit
 EOF
@@ -32,7 +32,7 @@ EOF
 
 POSITIONAL=()  # Array to store positional arguments
 
-USE_X11=false
+USE_X11=true
 
 while (( $# > 0 )); do
     opt="$1"
@@ -42,8 +42,8 @@ while (( $# > 0 )); do
             show_help
             exit 0
             ;;
-        -X)
-            USE_X11=true
+        --no-x)
+            USE_X11=false
             shift
             ;;
         *)
@@ -57,7 +57,6 @@ set -- "${POSITIONAL[@]}"  # Restore positional parameters
 
 # Parse arguments and get arg count
 node=$1
-argc=$#
 
 
 # Get username from scripts repository
@@ -87,8 +86,8 @@ fi
 # Login (with or without X11 forwarding)
 if [[ $USE_X11 = true ]]; then
     echo ">>> ssh -X ${login_path}"
-    ssh -X ${login_path}
+    ssh -X "${login_path}"
 else
     echo ">>> ssh ${login_path}"
-    ssh ${login_path}
+    ssh "${login_path}"
 fi
