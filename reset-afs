@@ -1,0 +1,53 @@
+#!/bin/zsh
+
+# Reset AFS
+# =========
+#
+# Reset the AFS mount (in case of problems)
+#
+# Usage:
+#
+#   reset-afs [--help]
+
+
+# Script name
+sname=${0##*/}
+
+# Help message
+show_help() {
+cat <<EOF
+usage: ${sname} [--help]
+
+Reset the AFS mount (in case of problems).
+
+optional arguments:
+  -h, --help   Show this help message and exit
+EOF
+}
+
+while (( $# > 0 )); do
+    opt="$1"
+
+    case $opt in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo "error: unknown option '$opt'"
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+echo "Restarting OpenAFS client"
+
+cd
+sudo service openafs-client stop
+sudo service openafs-client start
+
+echo "Resetting Kerberos ticket"
+
+init-krb
+cd -
