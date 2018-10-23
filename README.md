@@ -10,7 +10,7 @@ A collection of useful scripts for working at CERN and elsewhere.
 $ source setup.sh
 ```
 
-Executing the setup script adds this repository to your `PATH` and prompts you for your CERN username. If you have have a CERN login, enter it here; your username will be saved to `.username`. Otherwise, hit enter. Obviously if you don't have a CERN login you won't be able to use the scripts that require one.
+Executing the setup script adds this repository to your `PATH` and prompts you for your CERN username. If you have a CERN login, enter it here; your username will be saved to `.username`. Otherwise, hit enter. Obviously if you don't have a CERN login you won't be able to use the scripts that require one.
 
 ## Note
 

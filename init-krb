@@ -4,42 +4,64 @@
 # =============
 #
 # Initialize a Kerberos ticket and list the currently active tickets.
-# You can also specify the lifetime of the ticket (default is 12h)
+# You can also specify the lifetime of the ticket (default is 12h).
 #
-# Usage
-#
-#   $ init-krb <time>
+# usage: init-krb [--help] [<time>]
 
-# Number of given arguments
-argc=$#
+
+# Script name
+sname=${0##*/}
+
+# Help message
+show_help() {
+cat <<EOF
+usage: ${sname} [--help] [<time>]
+
+Initialize a Kerberos ticket and list the currently active tickets.
+You can also specify the lifetime of the ticket (default is 12h).
+
+optional arguments:
+  <time>       Ticket lifetime, e.g. '24h'; see 'man kinit' for format
+  -h, --help   Show this help message and exit
+EOF
+}
+
+
+# ----- Parse input arguments -----#
+
+while (( $# > 0 )); do
+    opt="$1"
+
+    case $opt in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -*)
+			echo "error: unknown option '$opt'"
+			show_help
+			exit 1
+			;;
+        *)
+            lifetime=$opt
+            shift
+            ;;
+    esac
+done
+
 
 # Get username from scripts repository
 USER="$( cd "$( dirname "${(%):-%N}" )" && cat $(pwd)/.username )"
 
-USAGE="usage: init-krb [--help] <time>"
-
-# Print help message
-if [[ $1 == "--help" ]] && ((argc == 1)); then
-    echo $USAGE
-    exit 0
-fi
-
-# Print help message
-if [[ $1 == "--help" ]] && ((argc > 1)); then
-    echo "init-krb: unrecognized option '${@:2}'"
-    echo $USAGE
-    exit 1
-fi
-
 # Init kerberos ticket with default or specified lifetime
-if ((argc == 0)); then
+if [[ -z $lifetime ]]; then
     kinit -l 12h -f ${USER}@CERN.CH
-elif ((argc == 1)); then
-    kinit -l $1 -f ${USER}@CERN.CH
 else
-    echo $USAGE
-    exit 1
+    kinit -l $lifetime -f ${USER}@CERN.CH
 fi
+
+# Get token for AFS authentication
+aklog
 
 echo
 

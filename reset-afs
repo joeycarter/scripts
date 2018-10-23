@@ -3,11 +3,9 @@
 # Reset AFS
 # =========
 #
-# Reset the AFS mount (in case of problems)
+# Reset the AFS mount (in case of problems).
 #
-# Usage:
-#
-#   reset-afs [--help]
+# usage: reset-afs [--help]
 
 
 # Script name

@@ -6,6 +6,8 @@
 # Login to CERN's lxplus server. You can login to either the first available
 # node or to a specific node (which is useful if you have a screen session
 # running on that node, as screen sessions cannot be accessed from other nodes).
+#
+# usage: lxplus [--help] [-n|--node <node>] [--no-x11]
 
 
 # Script name
@@ -14,23 +16,22 @@ sname=${0##*/}
 # Help message
 show_help() {
 cat <<EOF
-usage: ${sname} [--help] [--no-x] [NODE]
+usage: ${sname} [--help] [-n|--node <node>] [--no-x11]
 
 Login to CERN's lxplus server. You can login to either the first available
 node or to a specific node (which is useful if you have a screen session
 running on that node, as screen sessions cannot be accessed from other nodes).
 
 optional arguments:
-  --no-x       Disable X11 forwarding (enabled by default)
-  NODE         Login to this lxplus node (e.g. 001, 002, etc.)
+  -n <node>, --node <node>
+               Login to this lxplus node (e.g. 001, 002, etc.)
+  --no-x11     Disable X11 forwarding (enabled by default)
   -h, --help   Show this help message and exit
 EOF
 }
 
 
 # ----- Parse input arguments -----#
-
-POSITIONAL=()  # Array to store positional arguments
 
 USE_X11=true
 
@@ -42,21 +43,22 @@ while (( $# > 0 )); do
             show_help
             exit 0
             ;;
-        --no-x)
+        --no-x11)
             USE_X11=false
             shift
             ;;
-        *)
-            POSITIONAL+=("$1")
+        -n|--node)
+            node="$2"
             shift
+            shift
+            ;;
+        *)
+            echo "error: unknown option '$opt'"
+            show_help
+            exit 1
             ;;
     esac
 done
-
-set -- "${POSITIONAL[@]}"  # Restore positional parameters
-
-# Parse arguments and get arg count
-node=$1
 
 
 # Get username from scripts repository
