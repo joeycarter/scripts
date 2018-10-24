@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/joeycarter/scripts/blob/master/LICENSE)
 
-A collection of useful scripts for working at CERN and elsewhere.
+A collection of useful scripts for working at CERN and beyond.
 
 ## Installing
 

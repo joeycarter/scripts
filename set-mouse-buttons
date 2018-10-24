@@ -1,0 +1,70 @@
+#!/bin/zsh
+
+# Set Apple Mouse Buttons
+# =======================
+#
+# Set the "middle" button on an Apple mouse to act as a left click. This is
+# useful when working on a non-Apple computer since there is no physical
+# distinction between a "left", "middle" and "right" button, which often leads
+# to unintentional middle clicks (which can, for example, paste what's on the
+# clipboard, close a web browser tab, etc. on a Linux machine).
+#
+# usage: set-mouse-buttons [--help]
+
+
+# Script name
+sname=${0##*/}
+
+# Help message
+show_help() {
+cat <<EOF
+usage: ${sname} [--help]
+
+Set the "middle" button on an Apple mouse to act as a left click. This is
+useful when working on a non-Apple computer since there is no physical
+distinction between a "left", "middle" and "right" button, which often leads
+to unintentional middle clicks (which can, for example, paste what's on the
+clipboard, close a web browser tab, etc. on a Linux machine).
+
+optional arguments:
+  -h, --help   Show this help message and exit
+EOF
+}
+
+
+# ----- Parse input arguments -----#
+
+while (( $# > 0 )); do
+    opt="$1"
+
+    case $opt in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo "error: unknown option '$opt'"
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+# Get the mouse's device ID
+mouse_id=$(xinput | grep -i "mouse" | grep -Po "id=\K(\d+)")
+
+# Set the mouse buttons
+if [[ -z ${mouse_id} ]]; then
+    echo "error: could not find mouse device ID"
+    echo "Currently enabled input devices:"
+    xinput --list
+    exit 1
+else
+    # usage: xinput set-button-map <device name> <map button 1> [<map button 2> [...]]
+    xinput set-button-map ${mouse_id} 1 1 3
+
+    mouse_name=$(xinput --list $mouse_id | head -1 | sed 's/id.*//' | xargs)
+    new_button_map=$(xinput get-button-map ${mouse_id})
+    echo "New button map for '${mouse_name}' (id=${mouse_id}): ${new_button_map}"
+    # xinput get-button-map ${mouse_id}
+fi
