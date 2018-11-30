@@ -48,4 +48,8 @@ sudo service openafs-client start
 echo "Resetting Kerberos ticket"
 
 init-krb
+
+echo "Flushing OpenAFS cache"
+fs flushall
+
 cd -
