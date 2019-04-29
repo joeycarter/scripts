@@ -1,0 +1,62 @@
+#!/bin/zsh
+
+# Init List of lxplus Known Hosts
+# ===============================
+# 
+# Get the public ssh host key from each lxplus node using the ssh-keyscan utility
+# and save them to the list of known hosts (~/.ssh/known_hosts).
+#
+# usage: init-lxplus-known-hosts [--help]
+
+# Script name
+sname=${0##*/}
+
+# Help message
+show_help() {
+cat <<EOF
+usage: ${sname} [--help]
+
+Get the public ssh host key from each lxplus node using the ssh-keyscan utility
+and save them to the list of known hosts (~/.ssh/known_hosts).
+
+optional arguments:
+  -h, --help   Show this help message and exit
+EOF
+}
+
+
+# ----- Parse input arguments -----#
+
+while (( $# > 0 )); do
+    opt="$1"
+
+    case $opt in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo "error: unknown option '$opt'"
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+
+# Get username from scripts repository
+USER="$( cd "$( dirname "${(%):-%N}" )" && cat $(pwd)/.username )"
+
+# For old nodes
+for i in $(seq -f "%03g" 0 100); do
+    echo ">>> ssh-keyscan -H lxplus$i.cern.ch"
+    ssh-keyscan -H lxplus$i.cern.ch >> ~/.ssh/known_hosts
+done
+
+# For new, CentOS7 nodes
+for i in $(seq -f "%03g" 701 750); do
+    echo ">>> ssh-keyscan -H lxplus$i.cern.ch"
+    ssh-keyscan -H lxplus$i.cern.ch >> ~/.ssh/known_hosts
+done
+
+echo "Host keys written to ~/.ssh/known_hosts"

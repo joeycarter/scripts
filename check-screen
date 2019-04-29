@@ -3,15 +3,73 @@
 # Check for Running Screen Session
 # ================================
 # 
-# Check if a screen session is running on any lxplus node from 001 to 200
+# Check if a screen session is running on a specific lxplus node or any node
+# (from 700 to 750).
+#
+# Note that since lxplus switched to CentOS7, the node names have changed. Most
+# node IDs now fall between 700 and 750, but there are still a few between 0 and
+# 100. Some of these will have to be checked manually, to save time scanning
+# nodes that no longer exist.
+#
+# usage: check-screen [--help] [-n|--node <node>]
+
+# Script name
+sname=${0##*/}
+
+# Help message
+show_help() {
+cat <<EOF
+usage: ${sname} [--help] [-n|--node <node>]
+
+Check if a screen session is running on a specific lxplus node or any node.
+
+optional arguments:
+  -n <node>, --node <node>
+               Login to this lxplus node (e.g. 701, 702, etc.)
+  -h, --help   Show this help message and exit
+EOF
+}
+
+
+# ----- Parse input arguments -----#
+
+while (( $# > 0 )); do
+    opt="$1"
+
+    case $opt in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -n|--node)
+            node="$2"
+            shift
+            shift
+            ;;
+        *)
+            echo "error: unknown option '$opt'"
+            show_help
+            exit 1
+            ;;
+    esac
+done
 
 
 # Get username from scripts repository
 USER="$( cd "$( dirname "${(%):-%N}" )" && cat $(pwd)/.username )"
 
-for i in $(seq -f "%03g" 1 200); do
-	echo "${USER}@lxplus$i.cern.ch"
-	ssh -o ConnectTimeout=10 -o PreferredAuthentications=gssapi-with-mic,gssapi \
-	-o GSSAPIAuthentication=yes -o StrictHostKeyChecking=no -o LogLevel=quiet \
-	${USER}@lxplus$i.cern.ch "(screen -list | head -1 | grep -q 'There is a screen on') && hostname && screen -list"
-done
+if [[ -z $node ]]; then
+    # No node given, loop over all nodes
+    for i in $(seq -f "%03g" 701 750); do
+        echo ">>> ssh ${USER}@lxplus$i.cern.ch"
+        ssh -o ConnectTimeout=10 -o PreferredAuthentications=gssapi-with-mic,gssapi \
+        -o GSSAPIAuthentication=yes -o StrictHostKeyChecking=no -o LogLevel=quiet \
+        ${USER}@lxplus$i.cern.ch "(screen -list | head -1 | grep -q 'There is a screen on') && hostname && screen -list"
+    done
+else
+    # Login to the specific node
+    echo ">>> ssh ${USER}@lxplus$node.cern.ch"
+    ssh -v -o ConnectTimeout=10 -o PreferredAuthentications=gssapi-with-mic,gssapi \
+    -o GSSAPIAuthentication=yes -o StrictHostKeyChecking=no -o LogLevel=quiet \
+    ${USER}@lxplus$node.cern.ch "(screen -list | head -1 | grep -q 'There is a screen on') && hostname && screen -list"
+fi
