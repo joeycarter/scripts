@@ -54,7 +54,7 @@ for i in $(seq -f "%03g" 0 100); do
 done
 
 # For new, CentOS7 nodes
-for i in $(seq -f "%03g" 701 750); do
+for i in $(seq -f "%03g" 701 799); do
     echo ">>> ssh-keyscan -H lxplus$i.cern.ch"
     ssh-keyscan -H lxplus$i.cern.ch >> ~/.ssh/known_hosts
 done
