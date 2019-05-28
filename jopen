@@ -1,0 +1,57 @@
+#!/bin/zsh
+
+# Joey's Open (jopen)
+# ===================
+#
+# "Joey's Open" (jopen) is a tool to open a file or webpage from the command line
+# using xdg-open.
+#
+# usage: jopen [--help] <path|url>
+
+
+# Script name
+sname=${0##*/}
+
+# Help message
+show_help() {
+cat <<EOF
+usage: ${sname} [--help] <path|url>
+
+"Joey's Open" (jopen) is a tool to open a file or webpage from the command line
+using xdg-open.
+
+optional arguments:
+  -h, --help   Show this help message and exit
+EOF
+}
+
+
+# ----- Parse input arguments -----#
+
+while (( $# > 0 )); do
+    opt="$1"
+
+    case $opt in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -*)
+			echo "error: unknown option '$opt'"
+			show_help
+			exit 1
+			;;
+        *)
+            path_to_open=$opt
+            shift
+            ;;
+    esac
+done
+
+# Prepend "http://" if opening a url
+if [[ $path_to_open == "www."* ]]; then
+    path_to_open="http://${path_to_open}"
+fi
+
+# Open
+xdg-open $path_to_open &>/dev/null & disown
