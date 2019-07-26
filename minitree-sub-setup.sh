@@ -46,14 +46,22 @@ while (( $# > 0 )); do
     esac
 done
 
-cd "$(find $HOME -maxdepth 2 -type d -name HZZAnalRun2Code | head -1)/build"
+MINITREE_DIR=$(find $HOME -maxdepth 2 -type d -name HZZAnalRun2Code | head -1)
+echo ">>> cd ${MINITREE_DIR}/build"
+cd "${MINITREE_DIR}/build"
 
+echo ">>> asetup --restore"
 asetup --restore
 
 source x86_64-centos7-gcc62-opt/setup.sh
 
+echo ">>> voms-proxy-init"
 voms-proxy-init -valid 48:00 --voms atlas:/atlas/phys-higgs/Role=production
 
+echo ">>> lsetup [rucio,panda,pyami]"
 lsetup "rucio -w"
 lsetup "panda"
 lsetup "pyami"
+
+echo ">>> cd ${MINITREE_DIR}/source/HZZCommon/H4lGridSubmission"
+cd "${MINITREE_DIR}/source/HZZCommon/H4lGridSubmission"
