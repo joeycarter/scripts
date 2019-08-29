@@ -17,7 +17,7 @@ sname=${0##*/}
 # Help message
 show_help() {
 cat <<EOF
-usage: source ${sname} [--help]
+usage: source ${sname} [--help] [-s|-p] [-a]
 
 A convenience script to set up the environment on lxplus for H -> ZZ -> 4l
 minitree production submission to the Grid and post-processing. If no argument
@@ -25,7 +25,7 @@ is passed, it will set up for submission by default.
 
 optional arguments:
   -h, --help     Show this help message and exit
-  -s, --submit   Set up minitree submission
+  -s, --submit   Set up minitree submission (default)
   -p, --process  Set up minitree post-processing
   -a, --ami      Also set up pyami (off by default)
 EOF
@@ -34,7 +34,7 @@ EOF
 
 # ----- Parse input arguments -----#
 
-OPT_SUBMIT=false
+OPT_SUBMIT=true
 OPT_PROCESS=false
 OPT_AMI=false
 
@@ -48,9 +48,11 @@ while (( $# > 0 )); do
             ;;
         -s|--sub*)
             OPT_SUBMIT=true
+            OPT_PROCESS=false
             shift
             ;;
         -p|--proc*)
+            OPT_SUBMIT=false
             OPT_PROCESS=true
             shift
             ;;
