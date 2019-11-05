@@ -1,0 +1,75 @@
+#!/bin/zsh
+
+# Copy a Beamer Presentation
+# ==========================
+#
+# Copy a beamer presentation within the same "series" of presentations.
+#
+# usage: copy-presentation [--help] <source> <destination>
+
+
+# Script name
+sname=${0##*/}
+
+# Help message
+show_help() {
+cat <<EOF
+usage: ${sname} [--help] <source> <destination>
+
+Copy a beamer presentation within the same "series" of presentations.
+
+required arguments:
+  source         Path to presentation to copy
+  destination    Name of new presentation (i.e. name of top-level directory)
+
+optional arguments:
+  -h, --help     Show this help message and exit
+  -v, --verbose  Verbose output
+EOF
+}
+
+
+# ----- Parse input arguments -----#
+
+POSITIONAL=()
+VERBOSE=false
+
+while (( $# > 0 )); do
+    opt="$1"
+
+    case $opt in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -v|--verbose)
+            VERBOSE=true
+            shift
+            ;;
+        *)
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+SOURCE=${POSITIONAL[1]}
+DESTINATION=${POSITIONAL[2]}
+
+# Copy presentation directory from source to destination
+if [[ $VERBOSE = true ]]; then
+    cp -rv $SOURCE $DESTINATION
+else
+    cp -r $SOURCE $DESTINATION
+fi
+
+# Delete LaTeX auxiliary files
+if [[ $VERBOSE = true ]]; then
+    echo "Deleting LaTeX auxiliary files..."
+fi
+
+find $DESTINATION -name "jcarter*" -not -name "*.tex" -delete
+
+echo "Presentation copied to ${DESTINATION}"
