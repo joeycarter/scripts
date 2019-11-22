@@ -19,15 +19,19 @@ cat <<EOF
 usage: ${sname} [--help] [-n|--node <node>] [--no-x11]
 
 Login to CERN's lxplus server. You can login to either the first available
-node or to a specific node (which is useful if you have a screen session
-running on that node, as screen sessions cannot be accessed from other nodes).
+node or to a specific node (which is useful if you have a screen/tmux session
+running on that node, as these sessions cannot be accessed from other nodes).
 
 optional arguments:
   -n <node>, --node <node>
-               Login to this lxplus node (e.g. 001, 002, etc.)
+               Login to this lxplus node (e.g. 001, 002, etc.);
+               CentOS7 nodes begin with '7'; use '-n 6' for a SL6 node
   --no-x11     Disable X11 forwarding (enabled by default)
   -c, --check-host-key
                Force strict checking of lxplus host key (disabled by default)
+  -s <args>, --ssh <args>
+               Additional arguments to pass to the ssh command; wrap multiple
+               arguments in quotes, e.g. 'lxplus -s "-A -vv"'
   -h, --help   Show this help message and exit
 EOF
 }
@@ -58,7 +62,15 @@ while (( $# > 0 )); do
         -c|--check-host-key)
             CHECK_HOST_KEY=true
             shift
+            ;;
+        -s|--ssh)
+            ssh_args="$2"
             shift
+            shift
+            ;;
+        --) # End argument parsing
+            shift
+            break
             ;;
         *)
             echo "error: unknown option '$opt'"
@@ -96,18 +108,18 @@ fi
 # Login (with or without X11 forwarding and with or without StrictHostKeyChecking)
 if [[ $CHECK_HOST_KEY = false ]]; then
     if [[ $USE_X11 = true ]]; then
-        echo ">>> ssh -X ${login_path}"
-        ssh -X -o StrictHostKeyChecking=no "${login_path}"
+        echo ">>> ssh -X ${ssh_args} ${login_path}"
+        ssh -X -o StrictHostKeyChecking=no "${ssh_args}" "${login_path}"
     else
-        echo ">>> ssh ${login_path}"
-        ssh -o StrictHostKeyChecking=no "${login_path}"
+        echo ">>> ssh ${ssh_args} ${login_path}"
+        ssh -o StrictHostKeyChecking=no "${ssh_args}" "${login_path}"
     fi
 else
     if [[ $USE_X11 = true ]]; then
-        echo ">>> ssh -X ${login_path}"
-        ssh -X -o StrictHostKeyChecking=yes "${login_path}"
+        echo ">>> ssh -X -o StrictHostKeyChecking=yes ${ssh_args} ${login_path}"
+        ssh -X -o StrictHostKeyChecking=yes "${ssh_args}" "${login_path}"
     else
-        echo ">>> ssh ${login_path}"
-        ssh -o StrictHostKeyChecking=yes "${login_path}"
+        echo ">>> ssh -o StrictHostKeyChecking=yes ${ssh_args} ${login_path}"
+        ssh -o StrictHostKeyChecking=yes "${ssh_args}" "${login_path}"
     fi
 fi
