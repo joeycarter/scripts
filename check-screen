@@ -46,6 +46,10 @@ while (( $# > 0 )); do
             shift
             shift
             ;;
+        --) # End argument parsing
+            shift
+            break
+            ;;
         *)
             echo "error: unknown option '$opt'"
             show_help

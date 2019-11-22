@@ -46,6 +46,10 @@ while (( $# > 0 )); do
             VERBOSE=true
             shift
             ;;
+        --) # End argument parsing
+            shift
+            break
+            ;;
         *)
             POSITIONAL+=("$1") # save it in an array for later
             shift # past argument
