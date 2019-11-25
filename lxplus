@@ -109,17 +109,17 @@ fi
 if [[ $CHECK_HOST_KEY = false ]]; then
     if [[ $USE_X11 = true ]]; then
         echo ">>> ssh -X ${ssh_args} ${login_path}"
-        ssh -X -o StrictHostKeyChecking=no "${ssh_args}" "${login_path}"
+        ssh -X -o StrictHostKeyChecking=no ${ssh_args} "${login_path}"
     else
         echo ">>> ssh ${ssh_args} ${login_path}"
-        ssh -o StrictHostKeyChecking=no "${ssh_args}" "${login_path}"
+        ssh -o StrictHostKeyChecking=no ${ssh_args} "${login_path}"
     fi
 else
     if [[ $USE_X11 = true ]]; then
         echo ">>> ssh -X -o StrictHostKeyChecking=yes ${ssh_args} ${login_path}"
-        ssh -X -o StrictHostKeyChecking=yes "${ssh_args}" "${login_path}"
+        ssh -X -o StrictHostKeyChecking=yes ${ssh_args} "${login_path}"
     else
         echo ">>> ssh -o StrictHostKeyChecking=yes ${ssh_args} ${login_path}"
-        ssh -o StrictHostKeyChecking=yes "${ssh_args}" "${login_path}"
+        ssh -o StrictHostKeyChecking=yes ${ssh_args} "${login_path}"
     fi
 fi
