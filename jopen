@@ -41,10 +41,10 @@ while (( $# > 0 )); do
             break
             ;;
         -*)
-			echo "error: unknown option '$opt'"
-			show_help
-			exit 1
-			;;
+            echo "error: unknown option '$opt'"
+            show_help
+            exit 1
+            ;;
         *)
             path_to_open=$opt
             shift
