@@ -1,0 +1,157 @@
+#!/bin/zsh
+
+# New Script
+# ==========
+#
+# Create a new script!
+#
+# usage: new-script [--help] <script-name>
+
+
+# Script name
+sname=${0##*/}
+
+# Help message
+show_help() {
+cat <<EOF
+usage: ${sname} [--help] <name> [-f] [-x]
+
+Create a new script!
+
+required arguments
+  <name>       Script name
+
+optional arguments:
+  -h, --help   Show this help message and exit
+  -f, --force  Force overwrite if file with new script name already exists
+  -x, --executable
+               Make script executable (with chmod +x)
+EOF
+}
+
+
+# Script template
+script_template() {
+cat <<EOF_
+#!/bin/zsh
+
+# [Script Name]
+# =============
+#
+# [Script usage]
+#
+# usage: [script-name] [--help] [OPTIONS]
+
+
+# Script name
+sname=\${0##*/}
+
+# Help message
+show_help() {
+cat <<EOF
+usage: \${sname} [--help] [OPTIONS] ARGS
+
+[Script usage]
+
+required arguments:
+  ARGS         [Required arguments]
+
+optional arguments:
+  -h, --help   Show this help message and exit
+  OPTIONS      [Optional arguments]
+EOF
+}
+
+
+# ----- Parse input arguments -----#
+
+FLAG=false
+
+while (( \$# > 0 )); do
+    opt="\$1"
+
+    case \$opt in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        --flag)
+            FLAG=true
+            shift
+            ;;
+        --) # End argument parsing
+            shift
+            break
+            ;;
+        -*)
+            echo "error: unknown option '\$opt'"
+            show_help
+            exit 1
+            ;;
+        *)
+            ARGS=\$opt
+            shift
+            ;;
+    esac
+done
+
+echo "This script is called $script_name"
+
+if [[ \$FLAG = true ]]; then
+    echo "FLAG is true"
+fi
+
+EOF_
+}
+
+
+# ----- Parse input arguments -----#
+
+MAKE_EXECUTABLE=false
+FORCE_OVERWRITE=false
+
+while (( $# > 0 )); do
+    opt="$1"
+
+    case $opt in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -f|--force)
+            FORCE_OVERWRITE=true
+            shift
+            ;;
+        -x|--executable)
+            MAKE_EXECUTABLE=true
+            shift
+            ;;
+        --) # End argument parsing
+            shift
+            break
+            ;;
+        -*)
+            echo "error: unknown option '$opt'"
+            show_help
+            exit 1
+            ;;
+        *)
+            script_name=$opt
+            shift
+            ;;
+    esac
+done
+
+
+if [[ -f $script_name && $FORCE_OVERWRITE = false ]]; then
+    echo "error: file '${script_name}' already exists"
+    exit 1
+fi
+
+echo "Creating new script '${script_name}'"
+
+script_template > $script_name
+
+if [[ $MAKE_EXECUTABLE = true ]]; then
+    chmod +x $script_name
+fi
