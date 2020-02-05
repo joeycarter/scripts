@@ -20,6 +20,9 @@ usage: ${sname} [--help] <path|url>
 "Joey's Open" (jopen) is a tool to open a file or webpage from the command line
 using xdg-open.
 
+required arguments:
+  <path|url>   Path to file, directory or URL to open
+
 optional arguments:
   -h, --help   Show this help message and exit
 EOF
