@@ -76,4 +76,13 @@ fi
 
 find $DESTINATION -name "jcarter*" -not -name "*.tex" -delete
 
+# Delete LaTeX auxiliary files
+if [[ $VERBOSE = true ]]; then
+    echo "Changing date in .tex file name..."
+fi
+
+# Change .tex file name to use new date
+new_date=$(date --date=$(echo $DESTINATION | grep -oP "\d{4}-\d{2}-\d{2}") "+%Y%m%d")
+rename "s/([0-9]){8}/${new_date}/" ${DESTINATION}/*.tex
+
 echo "Presentation copied to ${DESTINATION}"
