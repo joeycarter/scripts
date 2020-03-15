@@ -92,7 +92,7 @@ if [[ -z $node ]]; then
     login_path="${USER}@cedar.computecanada.ca"
 else
     # Login to the specific node
-    login_path="${USER}@cedar${node}.computecanada.ca"
+    login_path="${USER}@cedar${node}.cedar.computecanada.ca"
 fi
 
 # Login (with or without X11 forwarding and with or without StrictHostKeyChecking)
